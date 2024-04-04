@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 contract funfund {
     address private immutable owner;
+
     Campaign[] public campaigns;
 
     struct Campaign {
@@ -36,6 +37,13 @@ contract funfund {
         uint256 _goal,
         uint256 _endAt
     ) external {
+        require(bytes(_title).length > 0, "Title must not be empty");
+        require(bytes(_desc).length > 0, "Description must not be empty");
+        require(bytes(_img).length > 0, "Image URI must not be empty");
+        require(_goal > 0, "Goal > zero");
+
+        require(_endAt >= 3, "Ends time > 3 days");
+
         campaigns.push(
             Campaign(
                 campaignID++,
@@ -54,10 +62,33 @@ contract funfund {
     }
 
     function donateCampagin(uint256 _id) external payable {
+        require(msg.value > 0, "Donation amount > 0");
+
         Campaign storage campaignSelected = campaigns[_id];
-        campaignSelected.donors.push(msg.sender);
-        campaignSelected.donorsContribution.push(msg.value);
-        campaignSelected.amountCollected += msg.value;
+        require(campaignSelected._status == Status.Active, "Not Active");
+        require(campaignSelected._status == Status.Pending, "Not Pending");
+
+        uint remainingFund = campaignSelected.goal -
+            campaignSelected.amountCollected;
+
+        if (msg.value <= remainingFund) {
+            campaignSelected.donors.push(msg.sender);
+            campaignSelected.donorsContribution.push(msg.value);
+            campaignSelected.amountCollected += msg.value;
+        } else {
+            uint excessAmount = msg.value - remainingFund; //ritorna
+            payable(msg.sender).transfer(excessAmount);
+            uint rest = msg.value - excessAmount;
+            campaignSelected.donors.push(msg.sender);
+            campaignSelected.donorsContribution.push(rest);
+            campaignSelected.amountCollected += rest;
+        }
+
+        if (campaignSelected.amountCollected >= campaignSelected.goal) {
+            campaignSelected._status = Status.Success;
+        } else {
+            campaignSelected._status = Status.Pending;
+        }
     }
 
     function deleteCampaigns(uint256 _id) external {
