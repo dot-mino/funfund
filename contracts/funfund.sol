@@ -4,6 +4,10 @@ pragma solidity ^0.8.24;
 contract funfund {
     address private immutable owner;
 
+    constructor() {
+        owner = msg.sender;
+    }
+
     Campaign[] public campaigns;
 
     struct Campaign {
@@ -24,7 +28,6 @@ contract funfund {
         Active,
         Pending,
         Success,
-        Unsuccess,
         Deleted
     }
 
@@ -41,8 +44,7 @@ contract funfund {
         require(bytes(_desc).length > 0, "Description must not be empty");
         require(bytes(_img).length > 0, "Image URI must not be empty");
         require(_goal > 0, "Goal > zero");
-
-        require(_endAt >= 3, "Ends time > 3 days");
+        require(_endAt >= block.timestamp, "Ends time > now");
 
         campaigns.push(
             Campaign(
@@ -63,11 +65,12 @@ contract funfund {
 
     function donateCampagin(uint256 _id) external payable {
         require(msg.value > 0, "Donation amount > 0");
-
         Campaign storage campaignSelected = campaigns[_id];
-        require(campaignSelected._status == Status.Active, "Not Active");
-        require(campaignSelected._status == Status.Pending, "Not Pending");
-
+        require(
+            campaignSelected._status == Status.Active ||
+                campaignSelected._status == Status.Pending,
+            "Not Active or Pending"
+        );
         uint remainingFund = campaignSelected.goal -
             campaignSelected.amountCollected;
 
@@ -84,17 +87,34 @@ contract funfund {
             campaignSelected.amountCollected += rest;
         }
 
-        if (campaignSelected.amountCollected >= campaignSelected.goal) {
+        if (campaignSelected.amountCollected == campaignSelected.goal) {
             campaignSelected._status = Status.Success;
-        } else {
+        } else if (campaignSelected.amountCollected < campaignSelected.goal) {
             campaignSelected._status = Status.Pending;
         }
     }
 
     function deleteCampaigns(uint256 _id) external {
         Campaign storage campaignSelected = campaigns[_id];
-        require(campaignSelected.creator == msg.sender);
+        require(
+            campaignSelected.creator == msg.sender || owner == msg.sender,
+            "not owner or creator"
+        );
+        require(block.timestamp >= campaignSelected.endAt, "not finished");
+        refund(campaignSelected.id);
         campaignSelected._status = Status.Deleted;
+    }
+
+    function refund(uint _id) internal {
+        Campaign storage compaignSelected = campaigns[_id];
+        if (compaignSelected.amountCollected > 0) {
+            for (uint i = 0; i < compaignSelected.donors.length; i++) {
+                address _donors = compaignSelected.donors[i];
+                uint _amount = compaignSelected.donorsContribution[i];
+                payable(_donors).transfer(_amount);
+                compaignSelected.amountCollected -= _amount;
+            }
+        }
     }
 
     function getAllCampaigns() public view returns (Campaign[] memory) {
