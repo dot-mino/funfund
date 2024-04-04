@@ -1,10 +1,10 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
-const funfundModule = buildModule("funfundModule", (m) => {
+const Module = buildModule("Module", (m) => {
 
-  const funfund = m.contract("funfund"); 
+  const deploy = m.contract("funfund"); 
 
-  return { funfund };
+  return { deploy };
 });
 
-export default funfundModule;
+export default Module;

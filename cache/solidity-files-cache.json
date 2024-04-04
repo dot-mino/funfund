@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "D:\\Users\\Alessio\\Documents\\Alchemy Projects\\funfund\\contracts\\funfund.sol": {
-      "lastModificationDate": 1712258301277,
-      "contentHash": "3f5645444bd01df888dee06df4b60b77",
+      "lastModificationDate": 1712260243742,
+      "contentHash": "a7063fa1f1b116ea6b318f78bacb1dbe",
       "sourceName": "contracts/funfund.sol",
       "solcConfig": {
         "version": "0.8.24",

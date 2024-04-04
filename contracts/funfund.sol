@@ -106,13 +106,13 @@ contract funfund {
     }
 
     function refund(uint _id) internal {
-        Campaign storage compaignSelected = campaigns[_id];
-        if (compaignSelected.amountCollected > 0) {
-            for (uint i = 0; i < compaignSelected.donors.length; i++) {
-                address _donors = compaignSelected.donors[i];
-                uint _amount = compaignSelected.donorsContribution[i];
+        Campaign storage campaignSelected = campaigns[_id];
+        if (campaignSelected.amountCollected > 0) {
+            for (uint i = 0; i < campaignSelected.donors.length; i++) {
+                address _donors = campaignSelected.donors[i];
+                uint _amount = campaignSelected.donorsContribution[i];
                 payable(_donors).transfer(_amount);
-                compaignSelected.amountCollected -= _amount;
+                campaignSelected.amountCollected -= _amount;
             }
         }
     }
