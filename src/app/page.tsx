@@ -8,14 +8,11 @@ import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 import { sepolia } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import dotenv from 'dotenv'; 
-dotenv.config(); 
-
 
 
 const config = getDefaultConfig({
   appName: "My RainbowKit App",
-  projectId : process.env.PROJECT_ID as string,
+  projectId: process.env.PROJECT_ID as string,
   chains: [sepolia],
   ssr: true,
 });
