@@ -6,13 +6,10 @@ import {
   NavbarItem,
   Input,
 } from "@nextui-org/react";
-import {
-  useDisclosure,
-} from "@nextui-org/react";
+
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
-export default function App() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+export default function Nav() {
 
   return (
     <Navbar isBordered className="bg-navbar text-black">
