@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import { Input } from "@nextui-org/react";
-import {Textarea} from "@nextui-org/react";
+import { Button, Input } from "@nextui-org/react";
+import { Textarea } from "@nextui-org/react";
 
 export default function Homepage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -39,24 +39,18 @@ export default function Homepage() {
                       color="primary"
                       placeholder="Description"
                     />
-                     <Input
-                      type="url"
-                      color="primary"
-                      placeholder="Image URI"
-                    />
+                    <Input type="url" color="primary" placeholder="Image URI" />
                   </div>
                   <div className="flex w-full flex-wrap md:flex-nowrap mb-6 md:mb-0 gap-4 mt-4">
-                  <Input
+                    <Input
                       type="value"
                       color="primary"
                       placeholder="Goal in ETH"
                     />
-                    <Input
-                      type="date"
-                      color="primary"
-                      placeholder="Date"
-                    />
-                    
+                    <Input type="date" color="primary" placeholder="Date" />
+                  </div>
+                  <div className="flex w-full flex-wrap md:flex-nowrap mb-6 md:mb-0  mt-4 item-center justify-center">
+                    <Button color="primary">Submit</Button>
                   </div>
                 </div>
               </div>
