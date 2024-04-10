@@ -1,5 +1,6 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import "@nomicfoundation/hardhat-ethers";
 require('dotenv').config();
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 const SEPOLIA_PRIVATE_KEY = process.env.PRIVATE_KEY;
