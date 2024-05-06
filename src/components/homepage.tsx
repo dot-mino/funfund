@@ -8,9 +8,9 @@ import { useEthersProvider } from '../components/adapters'
 import FunFundContract from "../../artifacts/contracts/funfund.sol/funfund.json";
 enum CampaignStatus {
   Active = 0,
-  Pending = 1,
+  Expired = 1,
   Success = 2,
-  Deleted = 3
+  Failed = 3
 }
 
 interface Campaign {
@@ -26,6 +26,7 @@ interface Campaign {
   donorsContribution: number[];
   amountCollected: number;
 }
+
 
 export default function Homepage() {
   const [title, setTitle] = useState("");
@@ -43,31 +44,70 @@ export default function Homepage() {
   const signer = useEthersSigner()
   const provider = useEthersProvider()
   
+  useEffect(() => {
+    getAllCampaigns(); // Carica tutte le campagne al caricamento della pagina
+  }, []);
 
+  const checkCampaignExpiry = async () => {
+  try {
+    const contract = new ethers.Contract(contractAddress, FunFundContract.abi, signer);
 
+    // Ottenere la data corrente in Unix Epoch
+    const currentUnixTime = Math.floor(Date.now() / 1000);
 
-  const handleCreateCampaign = async () => {
-    try {
-      setLoading(true);
-
-      const contract = new ethers.Contract(contractAddress, FunFundContract.abi, signer);
-      const timestamp = convertToUnixEpoch(date, time);
-
-      // Chiamare la funzione createCampaign del contratto
-      await contract.createCampaign(title, description, imageURI, goal, timestamp);
-
-      // Resetta i campi del form dopo aver creato la campagna
-      setTitle("");
-      setDescription("");
-      setImageURI("");
-      setGoal(0);
-      setDate("");
-    } catch (error) {
-      console.error("Error creating campaign:", error);
-    } finally {
-      setLoading(false);
+    // Controlla tutte le campagne per verificare se sono scadute
+    for (const campaign of campaigns) {
+      if (campaign._status === CampaignStatus.Active && currentUnixTime > campaign.endAt) {
+        // Aggiorna lo stato della campagna a "Expired" sul contratto
+        await contract.updateCampaignStatus(campaign.id, CampaignStatus.Expired);
+        
+        // Aggiorna lo stato locale della campagna come "Expired"
+        setCampaigns(prevCampaigns => prevCampaigns.map(prevCampaign => {
+          if (prevCampaign.id === campaign.id) {
+            return {...prevCampaign, _status: CampaignStatus.Expired};
+          }
+          return prevCampaign;
+        }));
+      }
     }
-  };
+  } catch (error) {
+    console.error("Error checking campaign expiry:", error);
+  }
+};
+
+// Esegui la funzione checkCampaignExpiry quando la lista delle campagne viene caricata o quando si aggiunge una nuova campagna
+useEffect(() => {
+  getAllCampaigns(); // Carica tutte le campagne al caricamento della pagina
+  checkCampaignExpiry(); // Controlla se le campagne sono scadute
+}, [campaignsLoaded, loading]);
+
+// Aggiorna la funzione handleCreateCampaign per controllare le campagne scadute quando viene creata una nuova campagna
+const handleCreateCampaign = async () => {
+  try {
+    setLoading(true);
+
+    const contract = new ethers.Contract(contractAddress, FunFundContract.abi, signer);
+    const timestamp = convertToUnixEpoch(date, time);
+
+    // Chiamare la funzione createCampaign del contratto
+    await contract.createCampaign(title, description, imageURI, goal, timestamp);
+
+    // Controlla le campagne scadute
+    await checkCampaignExpiry();
+
+    // Resetta i campi del form dopo aver creato la campagna
+    setTitle("");
+    setDescription("");
+    setImageURI("");
+    setGoal(0);
+    setDate("");
+  } catch (error) {
+    console.error("Error creating campaign:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const getAllCampaigns = async () => {
     try {
@@ -191,6 +231,7 @@ export default function Homepage() {
             <p>Goal: {campaign.goal.toString()} ETH</p>
             <p>Image : {campaign.img}</p>
             <p>EndTime : {unixEpochToDateTime(campaign.endAt.toString())}</p>
+            <p>Status : {CampaignStatus[campaign._status]} </p>
             {/* Altri campi della campagna */}
           </div>
         ))}
