@@ -26,9 +26,8 @@ contract funfund {
 
     enum Status {
         Active,
-        Pending,
-        Success,
-        Deleted
+        Deleted,
+        Success
     }
 
     uint256 public campaignID = 0;
@@ -62,41 +61,27 @@ contract funfund {
             )
         );
     }
-    
-    
-    function changeStatus(uint256 _id, Status _newStatus) external {
-    Campaign storage campaignSelected = campaigns[_id];
-    require(
-        msg.sender == owner || msg.sender == campaignSelected.creator,
-        "Not authorized"
-    );
-    require(
-        _newStatus == Status.Active ||
-        _newStatus == Status.Pending ||
-        _newStatus == Status.Success ||
-        _newStatus == Status.Deleted,
-        "Invalid status"
-    );
-    campaignSelected._status = _newStatus;
-}
 
-    function donateCampagin(uint256 _id) external payable {
+    function changeStatus(uint256 _id, Status _newStatus) internal {
+        Campaign storage campaignSelected = campaigns[_id];
+        campaignSelected._status = _newStatus;
+    }
+
+    function donateCampaign(uint256 _id) external payable {
         require(msg.value > 0, "Donation amount > 0");
         Campaign storage campaignSelected = campaigns[_id];
         require(
-            campaignSelected._status == Status.Active ||
-                campaignSelected._status == Status.Pending,
-            "Not Active or Pending"
+            campaignSelected._status == Status.Active,
+            "Not Active"
         );
-        uint remainingFund = campaignSelected.goal -
-            campaignSelected.amountCollected;
+        uint remainingFund = campaignSelected.goal - campaignSelected.amountCollected;
 
         if (msg.value <= remainingFund) {
             campaignSelected.donors.push(msg.sender);
             campaignSelected.donorsContribution.push(msg.value);
             campaignSelected.amountCollected += msg.value;
         } else {
-            uint excessAmount = msg.value - remainingFund; //ritorna
+            uint excessAmount = msg.value - remainingFund;
             payable(msg.sender).transfer(excessAmount);
             uint rest = msg.value - excessAmount;
             campaignSelected.donors.push(msg.sender);
@@ -104,10 +89,8 @@ contract funfund {
             campaignSelected.amountCollected += rest;
         }
 
-        if (campaignSelected.amountCollected == campaignSelected.goal) {
-            campaignSelected._status = Status.Success;
-        } else if (campaignSelected.amountCollected < campaignSelected.goal) {
-            campaignSelected._status = Status.Pending;
+        if (campaignSelected.amountCollected >= campaignSelected.goal) {
+            changeStatus(_id, Status.Success);
         }
     }
 
@@ -119,7 +102,7 @@ contract funfund {
         );
         require(block.timestamp >= campaignSelected.endAt, "not finished");
         refund(campaignSelected.id);
-        campaignSelected._status = Status.Deleted;
+        changeStatus(campaignSelected.id, Status.Deleted);
     }
 
     function refund(uint _id) internal {

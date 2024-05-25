@@ -40,7 +40,7 @@ export default function Homepage() {
   const [campaignsLoaded, setCampaignsLoaded] = useState(false);
 
   const account = useAccount().address;
-  const contractAddress = "0xa8Dc528037C7C13fbe5e12f5930D6f0b0016d11F";
+  const contractAddress = "0x08e2e20e32e3774bee4c02fbecf2b455f85a57fa";
   const signer = useEthersSigner()
   const provider = useEthersProvider()
   
