@@ -68,6 +68,7 @@ export interface FunfundInterface extends Interface {
     nameOrSignature:
       | "campaignID"
       | "campaigns"
+      | "changeStatus"
       | "createCampaign"
       | "deleteCampaigns"
       | "donateCampagin"
@@ -84,6 +85,10 @@ export interface FunfundInterface extends Interface {
   encodeFunctionData(
     functionFragment: "campaigns",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "changeStatus",
+    values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "createCampaign",
@@ -116,6 +121,10 @@ export interface FunfundInterface extends Interface {
 
   decodeFunctionResult(functionFragment: "campaignID", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "campaigns", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "changeStatus",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "createCampaign",
     data: BytesLike
@@ -217,6 +226,12 @@ export interface Funfund extends BaseContract {
       }
     ],
     "view"
+  >;
+
+  changeStatus: TypedContractMethod<
+    [_id: BigNumberish, _newStatus: BigNumberish],
+    [void],
+    "nonpayable"
   >;
 
   createCampaign: TypedContractMethod<
@@ -324,6 +339,13 @@ export interface Funfund extends BaseContract {
       }
     ],
     "view"
+  >;
+  getFunction(
+    nameOrSignature: "changeStatus"
+  ): TypedContractMethod<
+    [_id: BigNumberish, _newStatus: BigNumberish],
+    [void],
+    "nonpayable"
   >;
   getFunction(
     nameOrSignature: "createCampaign"

@@ -62,6 +62,23 @@ contract funfund {
             )
         );
     }
+    
+    
+    function changeStatus(uint256 _id, Status _newStatus) external {
+    Campaign storage campaignSelected = campaigns[_id];
+    require(
+        msg.sender == owner || msg.sender == campaignSelected.creator,
+        "Not authorized"
+    );
+    require(
+        _newStatus == Status.Active ||
+        _newStatus == Status.Pending ||
+        _newStatus == Status.Success ||
+        _newStatus == Status.Deleted,
+        "Invalid status"
+    );
+    campaignSelected._status = _newStatus;
+}
 
     function donateCampagin(uint256 _id) external payable {
         require(msg.value > 0, "Donation amount > 0");
