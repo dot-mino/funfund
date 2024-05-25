@@ -68,10 +68,9 @@ export interface FunfundInterface extends Interface {
     nameOrSignature:
       | "campaignID"
       | "campaigns"
-      | "changeStatus"
       | "createCampaign"
       | "deleteCampaigns"
-      | "donateCampagin"
+      | "donateCampaign"
       | "getAllCampaigns"
       | "getCampaignDetails"
       | "getContributionsByAddress"
@@ -87,10 +86,6 @@ export interface FunfundInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "changeStatus",
-    values: [BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "createCampaign",
     values: [string, string, string, BigNumberish, BigNumberish]
   ): string;
@@ -99,7 +94,7 @@ export interface FunfundInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "donateCampagin",
+    functionFragment: "donateCampaign",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -122,10 +117,6 @@ export interface FunfundInterface extends Interface {
   decodeFunctionResult(functionFragment: "campaignID", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "campaigns", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "changeStatus",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "createCampaign",
     data: BytesLike
   ): Result;
@@ -134,7 +125,7 @@ export interface FunfundInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "donateCampagin",
+    functionFragment: "donateCampaign",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -228,12 +219,6 @@ export interface Funfund extends BaseContract {
     "view"
   >;
 
-  changeStatus: TypedContractMethod<
-    [_id: BigNumberish, _newStatus: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-
   createCampaign: TypedContractMethod<
     [
       _title: string,
@@ -252,7 +237,7 @@ export interface Funfund extends BaseContract {
     "nonpayable"
   >;
 
-  donateCampagin: TypedContractMethod<[_id: BigNumberish], [void], "payable">;
+  donateCampaign: TypedContractMethod<[_id: BigNumberish], [void], "payable">;
 
   getAllCampaigns: TypedContractMethod<
     [],
@@ -341,13 +326,6 @@ export interface Funfund extends BaseContract {
     "view"
   >;
   getFunction(
-    nameOrSignature: "changeStatus"
-  ): TypedContractMethod<
-    [_id: BigNumberish, _newStatus: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
     nameOrSignature: "createCampaign"
   ): TypedContractMethod<
     [
@@ -364,7 +342,7 @@ export interface Funfund extends BaseContract {
     nameOrSignature: "deleteCampaigns"
   ): TypedContractMethod<[_id: BigNumberish], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "donateCampagin"
+    nameOrSignature: "donateCampaign"
   ): TypedContractMethod<[_id: BigNumberish], [void], "payable">;
   getFunction(
     nameOrSignature: "getAllCampaigns"
