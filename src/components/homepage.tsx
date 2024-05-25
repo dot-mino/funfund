@@ -20,7 +20,7 @@ interface Campaign {
   img: string;
   goal: number;
   endAt: number;
-  _status: CampaignStatus; // Puoi definire un tipo enum se lo hai definito nel contratto
+  _status: CampaignStatus;
   donors: string[];
   donorsContribution: number[];
   amountCollected: number;
@@ -44,23 +44,16 @@ export default function Homepage() {
   const provider = useEthersProvider()
   
   useEffect(() => {
-    getAllCampaigns(); // Carica tutte le campagne al caricamento della pagina
+    getAllCampaigns(); 
     checkCampaignExpiry();
   }, []);
 
   const checkCampaignExpiry = async () => {
   try {
-    console.log("dentro");
     const contract = new ethers.Contract(contractAddress, FunFundContract.abi, signer);
-
-    // Ottenere la data corrente in Unix Epoch
     const currentUnixTime = Math.floor(Date.now() / 1000);
-    
-
-    // Controlla tutte le campagne per verificare se sono scadute
     for (const campaign of campaigns) {
       if (campaign._status == CampaignStatus.Active && currentUnixTime > campaign.endAt) {
-        // Aggiorna lo stato della campagna a "Expired" sul contratto
         await contract.externalChangeStatus(campaign.id, CampaignStatus.Deleted);
       }
     }
@@ -69,13 +62,11 @@ export default function Homepage() {
   }
 };
 
-// Esegui la funzione checkCampaignExpiry quando la lista delle campagne viene caricata o quando si aggiunge una nuova campagna
 useEffect(() => {
   getAllCampaigns(); 
   checkCampaignExpiry(); 
 }, [campaignsLoaded, loading]);
 
-// Aggiorna la funzione handleCreateCampaign per controllare le campagne scadute quando viene creata una nuova campagna
 const handleCreateCampaign = async () => {
   try {
     setLoading(true);
@@ -83,10 +74,8 @@ const handleCreateCampaign = async () => {
     const contract = new ethers.Contract(contractAddress, FunFundContract.abi, signer);
     const timestamp = convertToUnixEpoch(date, time);
 
-    // Chiamare la funzione createCampaign del contratto
     await contract.createCampaign(title, description, imageURI, goal, timestamp);
 
-    // Resetta i campi del form dopo aver creato la campagna
     setTitle("");
     setDescription("");
     setImageURI("");
@@ -104,10 +93,8 @@ const handleCreateCampaign = async () => {
     try {
       const contract = new ethers.Contract(contractAddress, FunFundContract.abi, provider);
 
-      // Chiamare la funzione getAllCampaigns del contratto
       const campaignList = await contract.getAllCampaigns();
 
-      // Aggiorna lo stato locale con la lista di campagne ottenuta dal contratto
       setCampaigns(campaignList);
       setCampaignsLoaded(true);
     } catch (error) {
@@ -117,20 +104,16 @@ const handleCreateCampaign = async () => {
 
   const convertToUnixEpoch = (date: any, time: any) => {
     const selectedDateTime = new Date(`${date}T${time}`);
-    return selectedDateTime.getTime() / 1000; // Converti in secondi
+    return selectedDateTime.getTime() / 1000; 
   };
   function unixEpochToDateTime(unixEpoch : any) {
-    // Crea un oggetto Date utilizzando il timestamp Unix Epoch
-    const date = new Date(unixEpoch * 1000); // Moltiplica per 1000 per convertire da secondi a millisecondi
-  
-    // Estrai giorno, mese, anno, ore e minuti dall'oggetto Date
+    const date = new Date(unixEpoch * 1000); 
     const day = date.getDate();
-    const month = date.getMonth() + 1; // I mesi sono indicizzati da 0 a 11, quindi aggiungi 1
+    const month = date.getMonth() + 1; 
     const year = date.getFullYear();
     const hours = date.getHours();
     const minutes = date.getMinutes();
   
-    // Formatta la data e l'ora in una stringa leggibile
     const formattedDateTime = `${day}/${month}/${year} ${hours}:${minutes}`;
   
     return formattedDateTime;
@@ -214,7 +197,7 @@ const handleCreateCampaign = async () => {
         >
           Get All Campaigns
         </Button>
-        {/* Visualizza le campagne */}
+        {}
         {campaignsLoaded && campaigns.map((campaign, index) =>  (
           <div key={index} className="mt-4 p-4 border border-gray-200 rounded">
             <h2>Title: {campaign.title}</h2>
@@ -223,7 +206,7 @@ const handleCreateCampaign = async () => {
             <p>Image : {campaign.img}</p>
             <p>EndTime : {unixEpochToDateTime(campaign.endAt.toString())}</p>
             <p>Status : {CampaignStatus[campaign._status]} </p>
-            {/* Altri campi della campagna */}
+            {}
           </div>
         ))}
       </div>
