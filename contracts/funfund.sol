@@ -67,6 +67,15 @@ contract funfund {
         campaignSelected._status = _newStatus;
     }
 
+    function externalChangeStatus(uint256 _id, Status _newStatus) external {
+        Campaign storage campaignSelected = campaigns[_id];
+        require(
+            msg.sender == owner || msg.sender == campaignSelected.creator,
+            "Not authorized"
+        );
+        changeStatus(_id, _newStatus);
+    }
+
     function donateCampaign(uint256 _id) external payable {
         require(msg.value > 0, "Donation amount > 0");
         Campaign storage campaignSelected = campaigns[_id];
