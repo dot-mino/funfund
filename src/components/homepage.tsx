@@ -37,6 +37,9 @@ export default function Homepage() {
   const [loading, setLoading] = useState(false);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [campaignsLoaded, setCampaignsLoaded] = useState(false);
+  const [etherGoal, setEtherGoal] = useState("");
+
+  
 
   const account = useAccount().address;
   const contractAddress = "0x2A934ff3360784Db29e2170d06A08CBEc6EE5484";
@@ -73,13 +76,14 @@ const handleCreateCampaign = async () => {
 
     const contract = new ethers.Contract(contractAddress, FunFundContract.abi, signer);
     const timestamp = convertToUnixEpoch(date, time);
+    const goalInWei = ethers.parseEther(etherGoal);
 
-    await contract.createCampaign(title, description, imageURI, goal, timestamp);
+    await contract.createCampaign(title, description, imageURI, goalInWei, timestamp);
 
     setTitle("");
     setDescription("");
     setImageURI("");
-    setGoal(0);
+    setEtherGoal(""); // Reset the ether goal field
     setDate("");
   } catch (error) {
     console.error("Error creating campaign:", error);
@@ -87,6 +91,7 @@ const handleCreateCampaign = async () => {
     setLoading(false);
   }
 };
+
 
 
   const getAllCampaigns = async () => {
@@ -136,17 +141,17 @@ const handleCreateCampaign = async () => {
             onChange={(e) => setTitle(e.target.value)}
           />
           <Input
-            className="mt-4"
-            type="value"
-            placeholder="Goal"
-            value={goal.toString()}
-            onChange={(e) => setGoal(parseFloat(e.target.value))}
-            endContent={
-              <div className="pointer-events-none flex items-center">
-                <span className="text-default-400 text-small">ETH</span>
-              </div>
-            }
-          />
+  className="mt-4"
+  type="text"
+  placeholder="Goal in Ether"
+  value={etherGoal}
+  onChange={(e) => setEtherGoal(e.target.value)}
+  endContent={
+    <div className="pointer-events-none flex items-center">
+      <span className="text-default-400 text-small"> ETH </span>
+    </div>
+  }
+/>
           <Input
             type="url"
             className="mt-4"
@@ -202,7 +207,7 @@ const handleCreateCampaign = async () => {
           <div key={index} className="mt-4 p-4 border border-gray-200 rounded">
             <h2>Title: {campaign.title}</h2>
             <p>Description: {campaign.desc}</p>
-            <p>Goal: {campaign.goal.toString()} ETH</p>
+            <p>Goal: {campaign.goal.toString()} WEI</p>
             <p>Image : {campaign.img}</p>
             <p>EndTime : {unixEpochToDateTime(campaign.endAt.toString())}</p>
             <p>Status : {CampaignStatus[campaign._status]} </p>
