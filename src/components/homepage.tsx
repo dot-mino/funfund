@@ -194,20 +194,13 @@ const handleCreateCampaign = async () => {
         </div>
       </div>
       <div className="">
-        <Button
-          className="mt-2 self-end"
-          color="default"
-          onClick={getAllCampaigns}
-          disabled={loading}
-        >
-          Get All Campaigns
-        </Button>
+       
         {}
         {campaignsLoaded && campaigns.map((campaign, index) =>  (
           <div key={index} className="mt-4 p-4 border border-gray-200 rounded">
             <h2>Title: {campaign.title}</h2>
             <p>Description: {campaign.desc}</p>
-            <p>Goal: {campaign.goal.toString()} WEI</p>
+            <p>Goal: {ethers.formatEther(campaign.goal.toString())} ETH </p>
             <p>Image : {campaign.img}</p>
             <p>EndTime : {unixEpochToDateTime(campaign.endAt.toString())}</p>
             <p>Status : {CampaignStatus[campaign._status]} </p>
