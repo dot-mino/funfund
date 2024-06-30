@@ -175,15 +175,14 @@ const handleCreateCampaign = async () => {
             onChange={(e) => setTime(e.target.value)}
           />
         </div>
-        <div className="flex flex-col justify-between">
+        <div className="flex flex-col justify-between mt-2">
           <Textarea
-            label="Description"
-            labelPlacement="outside"
             placeholder="Enter your description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          <Button
+        </div>
+        <Button
             className="mt-2 self-end"
             color="default"
             onClick={handleCreateCampaign}
@@ -191,7 +190,6 @@ const handleCreateCampaign = async () => {
           >
             {loading ? "Creating Campaign..." : "Create Campaign"}
           </Button>
-        </div>
       </div>
       <div className="">
        
