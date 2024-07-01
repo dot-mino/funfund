@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { Button, Input, Textarea } from "@nextui-org/react";
 import { ethers } from "ethers";
+import Link from 'next/link';
 import { useEthersSigner, useEthersProvider } from '../components/adapters';
 import FunFundContract from "../../artifacts/contracts/funfund.sol/funfund.json";
 
@@ -200,6 +201,11 @@ export default function Homepage() {
             </div>
           ))}
         </div>
+        <Link href={`/campaigns/`}>
+                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                      Show more
+                    </button>
+                  </Link>
       </div>
     </div>
   );
