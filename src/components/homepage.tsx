@@ -189,7 +189,7 @@ export default function Homepage() {
           <span className="text-2xl text-center w-full text-gray-800">LAST CAMPAIGN</span>
         </div>
         <div className="flex flex-col items-center gap-4 mt-4">
-          {campaignsLoaded && campaigns.map((campaign, index) => (
+          {campaignsLoaded && [...campaigns].reverse().map((campaign, index) => (
             <div key={index} className="w-full max-w-md mt-4 p-4 border border-gray-300 rounded bg-white text-gray-800 shadow">
               <h2 className="text-gray-800">Title: {campaign.title}</h2>
               <p className="text-gray-800">Description: {campaign.desc}</p>
