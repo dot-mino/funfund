@@ -28,8 +28,6 @@ export default function Home() {
             <NextUIProvider>
               <Nav />
               <Homepage />
-              
-         
             </NextUIProvider>
           </RainbowKitProvider>
         </QueryClientProvider>
